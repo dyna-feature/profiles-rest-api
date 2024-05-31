@@ -6,6 +6,7 @@ from rest_framework import viewsets, filters
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+from rest_framework.permissions import IsAuthenticated
 
 
 #2 class pertama belajar tentang APIView dan ViewSet
@@ -108,6 +109,16 @@ class UserLoginApiView(ObtainAuthToken):
     """Handle creating user authentication tokens"""
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
+class UserProfileFeedViewset(viewsets.ModelViewSet):
+    """Handle Creating , reading, and update profile feed"""
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = serializers.ProfileFeedItemSerializer
+    queryset= models.ProfileFeedItem.objects.all()
+    permission_classes = (permissions.UpdateOwnStatus,IsAuthenticated)
 
+    def perform_create(self, serializer): #function ini bawaan django
+        """Set the user profile to the logged-in user"""
+        serializer.save(user_profile=self.request.user)
 
+ 
 
